@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -13,16 +14,15 @@ class UserController extends Controller
 
     public function signin(Request $request)
     {
-        $username = $request->input('username');
-        $password = $request->input('password');
+        $credentials = $request->only('username', 'password');
 
-        if ($username == 'admin' && $password == 'password') {
-            $request->session()->put('user', [
-                'is_login' => true,
-                'username' => $username
+        if (Auth::attempt($credentials)) {
+            $userData = Auth::user();
+            session()->put('user', [
+                'username' => $userData->username,
+                'email' => $userData->email
             ]);
-
-            return redirect()->route('profile');
+            return redirect()->route('blog');
         } else {
             return back()->with('error', 'Username atau password salah');
         }
@@ -36,14 +36,13 @@ class UserController extends Controller
     public function signup(Request $request)
     {
         $data = $request->all();
-        
         session()->put('user_register', $data);
-        
         return redirect()->route('signin')->with('success', 'Registrasi Berhasil!');
     }
 
     public function logout()
     {
+        Auth::logout();
         session()->forget('user');
         return redirect()->route('signin');
     }
