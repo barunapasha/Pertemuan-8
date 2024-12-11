@@ -15,9 +15,6 @@ Route::post('/signup', function () {
 });
 Route::get('/', function () {
     return 'Halaman utama aplikasi';
-});
-Route::get('/blog', function () {
-    return 'Daftar artikel blog';
 }); 
 Route::get('/blog/{blogId}', function ($blogId) {
     $category = request()->query('category', 'general');
